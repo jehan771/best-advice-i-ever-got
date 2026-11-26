@@ -39,6 +39,12 @@ if (terminators.length !== 1 || !SENTENCE.endsWith(".")) {
 if (/\n/.test(SENTENCE)) {
   fail("sentence must not contain a newline");
 }
+if (SENTENCE.includes("  ")) {
+  fail("sentence must not contain a double space");
+}
+if (SENTENCE !== SENTENCE.trim()) {
+  fail("sentence must not have leading or trailing whitespace");
+}
 
 // --- write + read-back verification ---------------------------------------
 mkdirSync("/output", { recursive: true });
@@ -47,6 +53,12 @@ writeFileSync(OUT_PATH, SENTENCE, "utf8");
 const back = readFileSync(OUT_PATH, "utf8");
 if (back !== SENTENCE) {
   fail("read-back mismatch: file content differs from the intended sentence");
+}
+if (back.endsWith("\n")) {
+  fail("entry.txt must not end with a newline");
+}
+if (Buffer.byteLength(back, "utf8") !== Buffer.byteLength(SENTENCE, "utf8")) {
+  fail("read-back byte length differs from the intended sentence");
 }
 
 console.log(`wrote ${chars.length} chars (${Buffer.byteLength(SENTENCE, "utf8")} bytes) to ${OUT_PATH}`);
